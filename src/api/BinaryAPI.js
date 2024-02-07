@@ -35,9 +35,15 @@ class BinaryAPI {
 			adjust_start_time: 1,
 			count: 1,
 		};
-		this.ws.send(JSON.stringify(params));
+
+		if (this.ws.readyState === WebSocket.OPEN) {
+			this.ws.send(JSON.stringify(params));
+		} else {
+			console.error("WebSocket is not open");
+		}
+
 		return new Promise((resolve, reject) => {
-			this.ws.on("message", (data) => {
+			this.ws.once("message", (data) => {
 				resolve(JSON.parse(data));
 			});
 		});
@@ -149,6 +155,21 @@ class BinaryAPI {
 			return "sell";
 		}
 		return null;
+	}
+
+	calculate_mean_reversion() {
+		const prices = this.long_term_prices;
+		const mean = prices.reduce((a, b) => a + b, 0) / prices.length;
+		const currentPrice =
+			this.short_term_prices[this.short_term_prices.length - 1];
+
+		if (currentPrice > mean) {
+			return "sell";
+		}
+		if (currentPrice < mean) {
+			return "buy";
+		}
+		return "hold";
 	}
 
 	// This method is used to start the trading bot

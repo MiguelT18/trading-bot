@@ -23,6 +23,7 @@ const strategies = [
 	api.check_crossing.bind(api),
 	api.calculate_rsi.bind(api),
 	api.calculate_breakout.bind(api),
+	api.calculate_mean_reversion.bind(api),
 ];
 
 if (strategies && strategies.length > 0) {
